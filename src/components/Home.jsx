@@ -1,25 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import JobCard from "./JobCard";
 
 const Home = () => {
-  const [jobs] = useState([
-    { id: 1, title: "Frontend Developer", company: "TechNepal", location: "Kathmandu", salary: "Rs. 80,000" },
-    { id: 2, title: "Backend Developer", company: "CodeArt", location: "Pokhara", salary: "Rs. 70,000" },
-    { id: 3, title: "Frontend Developer", company: "TechNepal", location: "Kathmandu", salary: "Rs. 80,000" },
-    { id: 4, title: "Backend Developer", company: "CodeArt", location: "Pokhara", salary: "Rs. 70,000" },
-    { id: 5, title: "Frontend Developer", company: "TechNepal", location: "Kathmandu", salary: "Rs. 80,000" },
-    { id: 6, title: "Backend Developer", company: "CodeArt", location: "Pokhara", salary: "Rs. 70,000" },
-  ]);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch jobs from backend
+  const getJobs = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/jobs");
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch jobs");
+      }
+
+      setJobs(data.data || []); // assuming backend sends { data: [...jobs] }
+    } catch (err) {
+      setError(err.message);
+      console.error(err);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getJobs();
+  }, []);
 
   return (
     <div>
       <h2 className="mb-4 text-center">Available Jobs</h2>
+
+      {loading && <p className="text-center">Loading jobs...</p>}
+      {error && <p className="text-danger text-center">{error}</p>}
+
       <div className="row">
-        {jobs.map((job) => (
-          <div key={job.id} className="col-md-4 mb-3">
-            <JobCard job={job} />
-          </div>
-        ))}
+        {jobs.length > 0 ? (
+          jobs.map((job) => (
+            <div key={job._id} className="col-md-4 mb-3">
+              <JobCard job={job} />
+            </div>
+          ))
+        ) : (
+          !loading && <p className="text-center">No jobs available.</p>
+        )}
       </div>
     </div>
   );
