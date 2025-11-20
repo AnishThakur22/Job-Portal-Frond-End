@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar.jsx";
+import Home from "./components/Home";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import Dashboard from "./components/Dashboard";
+import PostJob from "./components/PostJob";
+import JobDetails from "./components/JobDetails";
+import Navbar from "./components/Navbar";
+import PrivateRoute from "./components/ProtectedRoute";
 import Footer from "./components/Footer.jsx";
-import Home from "./components/Home.jsx";
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
-import Dashboard from "./components/Dashboard.jsx";
-import PostJob from "./components/PostJob.jsx";
-import JobDetails from "./components/JobDetails.jsx";
 
 function App() {
   return (
@@ -14,14 +15,37 @@ function App() {
       <div className="grid grid-rows-[1fr_auto_1fr] h-[100vh]">
         <Navbar />
         <div className="container mt-4 h-full py-[100px]">
+
           <Routes>
             <Route path="/" element={<Home />} />
+
+            {/* Public Routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/post-job" element={<PostJob />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/post-job"
+              element={
+                <PrivateRoute>
+                  <PostJob />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Public Job Detail route */}
             <Route path="/job/:id" element={<JobDetails />} />
           </Routes>
+
         </div>
         <Footer />
       </div>
